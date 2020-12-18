@@ -26,32 +26,26 @@ ncopy:
 loop1:	
 	mrmovq (%rdi), %r10	# read val from src...
 	rmmovq %r10, (%rsi)	# ...and store it to dst
-	iaddq $8, %rdi
-	iaddq $8, %rsi
 	andq %r10, %r10		# val <= 0?
 	jle add2
 	iaddq $1, %rax		# count++
 add2:
-	mrmovq (%rdi), %r10	# read val from src...
-	rmmovq %r10, (%rsi)	# ...and store it to dst
-	iaddq $8, %rdi
-	iaddq $8, %rsi
+	mrmovq 8(%rdi), %r10	# read val from src...
+	rmmovq %r10, 8(%rsi)	# ...and store it to dst
 	andq %r10, %r10		# val <= 0?
 	jle add3
 	iaddq $1, %rax		# count++
 add3:
-	mrmovq (%rdi), %r10	# read val from src...
-	rmmovq %r10, (%rsi)	# ...and store it to dst
-	iaddq $8, %rdi
-	iaddq $8, %rsi
+	mrmovq 16(%rdi), %r10	# read val from src...
+	rmmovq %r10, 16(%rsi)	# ...and store it to dst
 	andq %r10, %r10		# val <= 0?
 	jle add4
 	iaddq $1, %rax		# count++
 add4:
-	mrmovq (%rdi), %r10	# read val from src...
-	rmmovq %r10, (%rsi)	# ...and store it to dst
-	iaddq $8, %rdi
-	iaddq $8, %rsi
+	mrmovq 24(%rdi), %r10	# read val from src...
+	rmmovq %r10, 24(%rsi)	# ...and store it to dst
+	iaddq $32, %rdi
+	iaddq $32, %rsi
 	andq %r10, %r10		# val <= 0?
 	jle test
 	iaddq $1, %rax		# count++
