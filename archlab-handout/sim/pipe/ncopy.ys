@@ -62,17 +62,35 @@ preloop2:
 	iaddq $5, %rdx
 	je Done
 loop2:
-	mrmovq (%rdi), %r10	# read val from src...
-	rmmovq %r10, (%rsi)	# ...and store it to dst
-	iaddq $8, %rdi
-	iaddq $8, %rsi
-	andq %r10, %r10		# val <= 0?
-	jle new_len
+	mrmovq (%rdi), %r8	# read val from src...
+	mrmovq 8(%rdi), %r9	# read val from src...
+	mrmovq 16(%rdi), %r10	# read val from src...
+	mrmovq 24(%rdi), %r11	# read val from src...
+	rmmovq %r8, (%rsi)	# ...and store it to dst
+	andq %r8, %r8		# val <= 0?
+	jle next2
 	iaddq $1, %rax		# count++
-new_len:
+next2:
 	iaddq $-1, %rdx
-	andq %rdx, %rdx
-	jne loop2
+	je Done
+	rmmovq %r9, 8(%rsi)	# ...and store it to dst
+	andq %r9, %r9		# val <= 0?
+	jle next3
+	iaddq $1, %rax		# count++
+next3:
+	iaddq $-1, %rdx
+	je Done
+	rmmovq %r10, 16(%rsi)	# ...and store it to dst
+	andq %r10, %r10		# val <= 0?
+	jle next4
+	iaddq $1, %rax		# count++
+next4:
+	iaddq $-1, %rdx
+	je Done
+	rmmovq %r11, 24(%rsi)	# ...and store it to dst
+	andq %r11, %r11		# val <= 0?
+	jle Done
+	iaddq $1, %rax		# count++
 ##################################################################
 # Do not modify the following section of code
 # Function epilogue.
