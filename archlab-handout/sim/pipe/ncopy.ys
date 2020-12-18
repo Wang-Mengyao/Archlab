@@ -16,26 +16,63 @@ ncopy:
 
 ##################################################################
 # You can modify this portion
+# try loop unrolling first and iaddq is available now. limit stores in %r8
 	# Loop header
 	xorq %rax,%rax		# count = 0;
 	andq %rdx,%rdx		# len <= 0?
 	jle Done		# if so, goto Done:
-
-Loop:	
+	iaddq $-4, %rdx
+	jl preloop2
+loop1:	
 	mrmovq (%rdi), %r10	# read val from src...
 	rmmovq %r10, (%rsi)	# ...and store it to dst
+	iaddq $8, %rdi
+	iaddq $8, %rsi
 	andq %r10, %r10		# val <= 0?
-	jle Npos		# if so, goto Npos:
-	irmovq $1, %r10
-	addq %r10, %rax		# count++
-Npos:	
-	irmovq $1, %r10
-	subq %r10, %rdx		# len--
-	irmovq $8, %r10
-	addq %r10, %rdi		# src++
-	addq %r10, %rsi		# dst++
-	andq %rdx,%rdx		# len > 0?
-	jg Loop			# if so, goto Loop:
+	jle add2
+	iaddq $1, %rax		# count++
+add2:
+	mrmovq (%rdi), %r10	# read val from src...
+	rmmovq %r10, (%rsi)	# ...and store it to dst
+	iaddq $8, %rdi
+	iaddq $8, %rsi
+	andq %r10, %r10		# val <= 0?
+	jle add3
+	iaddq $1, %rax		# count++
+add3:
+	mrmovq (%rdi), %r10	# read val from src...
+	rmmovq %r10, (%rsi)	# ...and store it to dst
+	iaddq $8, %rdi
+	iaddq $8, %rsi
+	andq %r10, %r10		# val <= 0?
+	jle add4
+	iaddq $1, %rax		# count++
+add4:
+	mrmovq (%rdi), %r10	# read val from src...
+	rmmovq %r10, (%rsi)	# ...and store it to dst
+	iaddq $8, %rdi
+	iaddq $8, %rsi
+	andq %r10, %r10		# val <= 0?
+	jle test
+	iaddq $1, %rax		# count++
+test:
+	iaddq $-4, %rdx
+	jge loop1 # if so, goto Loop1:big loop 4 x 1
+preloop2:
+	iaddq $4, %rdx
+	je Done
+loop2:
+	mrmovq (%rdi), %r10	# read val from src...
+	rmmovq %r10, (%rsi)	# ...and store it to dst
+	iaddq $8, %rdi
+	iaddq $8, %rsi
+	andq %r10, %r10		# val <= 0?
+	jle new_len
+	iaddq $1, %rax		# count++
+new_len:
+	iaddq $-1, %rdx
+	andq %rdx, %rdx
+	jne loop2
 ##################################################################
 # Do not modify the following section of code
 # Function epilogue.
