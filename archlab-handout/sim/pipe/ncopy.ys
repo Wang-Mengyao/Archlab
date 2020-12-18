@@ -21,13 +21,14 @@ ncopy:
 	xorq %rax,%rax		# count = 0;
 	andq %rdx,%rdx		# len <= 0?
 	jle Done		# if so, goto Done:
-	iaddq $-4, %rdx
+	iaddq $-5, %rdx
 	jl preloop2
 loop1:	
 	mrmovq (%rdi), %r8	# read val from src...
 	mrmovq 8(%rdi), %r9	# read val from src...
 	mrmovq 16(%rdi), %r10	# read val from src...
 	mrmovq 24(%rdi), %r11	# read val from src...
+	mrmovq 32(%rdi), %r12	# read val from src...
 	rmmovq %r8, (%rsi)	# ...and store it to dst
 	andq %r8, %r8		# val <= 0?
 	jle add2
@@ -44,16 +45,21 @@ add3:
 	iaddq $1, %rax		# count++
 add4:
 	rmmovq %r11, 24(%rsi)	# ...and store it to dst
-	iaddq $32, %rdi
-	iaddq $32, %rsi
 	andq %r11, %r11 	# val <= 0?
+	jle add5
+	iaddq $1, %rax		# count++
+add5:
+	rmmovq %r12, 32(%rsi)	# ...and store it to dst
+	iaddq $40, %rdi
+	iaddq $40, %rsi
+	andq %r12, %r12 	# val <= 0?
 	jle test
 	iaddq $1, %rax		# count++
 test:
-	iaddq $-4, %rdx
+	iaddq $-5, %rdx
 	jge loop1 # if so, goto Loop1:big loop 4 x 1
 preloop2:
-	iaddq $4, %rdx
+	iaddq $5, %rdx
 	je Done
 loop2:
 	mrmovq (%rdi), %r10	# read val from src...
