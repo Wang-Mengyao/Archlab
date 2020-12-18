@@ -24,29 +24,29 @@ ncopy:
 	iaddq $-4, %rdx
 	jl preloop2
 loop1:	
-	mrmovq (%rdi), %r10	# read val from src...
-	rmmovq %r10, (%rsi)	# ...and store it to dst
-	andq %r10, %r10		# val <= 0?
+	mrmovq (%rdi), %r8	# read val from src...
+	mrmovq 8(%rdi), %r9	# read val from src...
+	mrmovq 16(%rdi), %r10	# read val from src...
+	mrmovq 24(%rdi), %r11	# read val from src...
+	rmmovq %r8, (%rsi)	# ...and store it to dst
+	andq %r8, %r8		# val <= 0?
 	jle add2
 	iaddq $1, %rax		# count++
 add2:
-	mrmovq 8(%rdi), %r10	# read val from src...
-	rmmovq %r10, 8(%rsi)	# ...and store it to dst
-	andq %r10, %r10		# val <= 0?
+	rmmovq %r9, 8(%rsi)	# ...and store it to dst
+	andq %r9, %r9		# val <= 0?
 	jle add3
 	iaddq $1, %rax		# count++
 add3:
-	mrmovq 16(%rdi), %r10	# read val from src...
 	rmmovq %r10, 16(%rsi)	# ...and store it to dst
 	andq %r10, %r10		# val <= 0?
 	jle add4
 	iaddq $1, %rax		# count++
 add4:
-	mrmovq 24(%rdi), %r10	# read val from src...
-	rmmovq %r10, 24(%rsi)	# ...and store it to dst
+	rmmovq %r11, 24(%rsi)	# ...and store it to dst
 	iaddq $32, %rdi
 	iaddq $32, %rsi
-	andq %r10, %r10		# val <= 0?
+	andq %r11, %r11 	# val <= 0?
 	jle test
 	iaddq $1, %rax		# count++
 test:
