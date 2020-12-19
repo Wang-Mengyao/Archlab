@@ -1,4 +1,7 @@
 # 19307130352 Mengyao Wang
+# do loop rolling, test 2, 3, 5, 6, 7, 8 and 5 seems the best
+# read all vals from src first and stores them in different registers to avoid stalling in rmmovq %r8, (%rsi)
+# avoid iaddq $8, %rdi many times and use iaddq $40, %rdi in the end 
 #/* $begin ncopy-ys */
 ##################################################################
 # ncopy.ys - Copy a src block of len words to dst.
