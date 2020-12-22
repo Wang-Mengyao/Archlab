@@ -74,24 +74,24 @@ loop2:
 next2:
 	iaddq $-1, %rdx
 	je Done
-	rmmovq %r9, 8(%rsi)	# ...and store it to dst
 	andq %r9, %r9		# val <= 0?
+	rmmovq %r9, 8(%rsi)	# ...and store it to dst
 	jle next3
 	iaddq $1, %rax		# count++
 next3:
-	mrmovq 16(%rdi), %r10	# read val from src...
-	mrmovq 24(%rdi), %r11	# read val from src...
 	iaddq $-1, %rdx
 	je Done
-	rmmovq %r10, 16(%rsi)	# ...and store it to dst
+	mrmovq 16(%rdi), %r10	# read val from src...
+	mrmovq 24(%rdi), %r11	# read val from src...
 	andq %r10, %r10		# val <= 0?
+	rmmovq %r10, 16(%rsi)	# ...and store it to dst
 	jle next4
 	iaddq $1, %rax		# count++
 next4:
 	iaddq $-1, %rdx
 	je Done
-	rmmovq %r11, 24(%rsi)	# ...and store it to dst
 	andq %r11, %r11		# val <= 0?
+	rmmovq %r11, 24(%rsi)	# ...and store it to dst
 	jle Done
 	iaddq $1, %rax		# count++
 ##################################################################
