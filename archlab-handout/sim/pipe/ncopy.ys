@@ -62,38 +62,57 @@ test:
 	iaddq $-5, %rdx
 	jge loop1 # if so, goto Loop1:big loop 4 x 1
 preloop2:
-	iaddq $5, %rdx
-	je Done
-loop2:
-	mrmovq (%rdi), %r8	# read val from src...
-	mrmovq 8(%rdi), %r9	# read val from src...
-	rmmovq %r8, (%rsi)	# ...and store it to dst
-	andq %r8, %r8		# val <= 0?
-	jle next2
-	iaddq $1, %rax		# count++
-next2:
-	iaddq $-1, %rdx
-	je Done
-	andq %r9, %r9		# val <= 0?
-	rmmovq %r9, 8(%rsi)	# ...and store it to dst
-	jle next3
-	iaddq $1, %rax		# count++
-next3:
-	iaddq $-1, %rdx
-	je Done
-	mrmovq 16(%rdi), %r10	# read val from src...
-	mrmovq 24(%rdi), %r11	# read val from src...
-	andq %r10, %r10		# val <= 0?
-	rmmovq %r10, 16(%rsi)	# ...and store it to dst
-	jle next4
-	iaddq $1, %rax		# count++
-next4:
-	iaddq $-1, %rdx
-	je Done
-	andq %r11, %r11		# val <= 0?
-	rmmovq %r11, 24(%rsi)	# ...and store it to dst
+	iaddq $3, %rdx
+	jl next2
+	jg next1
+next0:
+	mrmovq (%rdi), %r8
+	mrmovq 8(%rdi), %r9
+	andq %r8, %r8
+	rmmovq %r8, (%rsi)
+	jle next01
+	iaddq $1, %rax
+next01:
+	andq %r9, %r9
+	rmmovq %r9, 8(%rsi)
 	jle Done
-	iaddq $1, %rax		# count++
+	jmp preDone
+next1:
+	mrmovq (%rdi), %r8
+	mrmovq 8(%rdi), %r9
+	mrmovq 16(%rdi), %r10
+	andq %r8, %r8
+	rmmovq %r8, (%rsi)
+	jle next11
+	iaddq $1, %rax
+next11:
+	andq %r9, %r9
+	rmmovq %r9, 8(%rsi)
+	jle next120
+	iaddq $1, %rax
+next120:
+	andq %r10, %r10
+	rmmovq %r10, 16(%rsi)
+	jle next121
+	iaddq $1, %rax
+next121:
+	iaddq $-1, %rdx
+	je Done
+next13:
+	mrmovq 24(%rdi), %r11
+	andq %r11, %r11
+	rmmovq %r11, 24(%rsi)
+	jle Done
+	jmp preDone
+next2:
+	iaddq $2, %rdx
+	je Done
+	mrmovq (%rdi), %r8
+	rmmovq %r8, (%rsi)
+	andq %r8, %r8
+	jle Done
+preDone:
+	iaddq $1, %rax
 ##################################################################
 # Do not modify the following section of code
 # Function epilogue.
