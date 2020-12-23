@@ -81,85 +81,59 @@ test:
 	jge loop1 # if so, goto Loop1:big loop 8 x 1
 preloop2:
 	iaddq $5, %rdx
-	jl next2
-next0:
-	mrmovq (%rdi), %r8
-	mrmovq 8(%rdi), %r9
+	jl pre1
+	jg pre2
+	jmp c3
+pre1:
+	iaddq $2, %rdx
+	jl Done
+	jg c2
+	jmp c1
+pre2:
+	iaddq $-2, %rdx
+	jl c4
+	je c5
+	iaddq $-1, %rdx
+	je c6
+c7:
+	mrmovq 48(%rdi), %r14
+	rmmovq %r14, 48(%rsi)
+c6:
+	andq %r14, %r14
+	mrmovq 40(%rdi), %r13
+	
+	rmmovq %r13, 40(%rsi)
+	jle c51
+	iaddq $1, %rax
+c5:
+	mrmovq 32(%rdi), %r12
+	andq %r12, %r12
+	rmmovq %r12, 32(%rsi)
+	jle c41
+	iaddq $1, %rax
+c4:
+	mrmovq 24(%rdi), %r11
+	andq %r11, %r11
+	rmmovq %r11, 24(%rsi)
+	jle c31
+	iaddq $1, %rax
+c3:
 	mrmovq 16(%rdi), %r10
-	andq %r8, %r8
-	rmmovq %r8, (%rsi)
-	jle next01
-	iaddq $1, %rax
-next01:
-	andq %r9, %r9
-	rmmovq %r9, 8(%rsi)
-	jle next02
-	iaddq $1, %rax
-next02:
 	andq %r10, %r10
 	rmmovq %r10, 16(%rsi)
-	jle prenext1
+	jle c21
 	iaddq $1, %rax
-# 4,5,6,7
-prenext1:
-	andq %rdx, %rdx
-	je Done
-	mrmovq 24(%rdi), %r11
-	mrmovq 32(%rdi), %r12
-	iaddq $-2, %rdx
-	jg next1
-next4:
-	andq %r11, %r11
-	rmmovq %r11, 24(%rsi)
-	jle next41
-	iaddq $1, %rax
-next41:
-	iaddq $1, %rdx
-	je Done
-	andq %r12, %r12
-	rmmovq %r12, 32(%rsi)
-	jle Done
-	jmp preDone
-next1:
-	mrmovq 40(%rdi), %r13
-	mrmovq 48(%rdi), %r14
-	andq %r11, %r11
-	rmmovq %r11, 24(%rsi)
-	jle next11
-	iaddq $1, %rax
-next11:
-	andq %r12, %r12
-	rmmovq %r12, 32(%rsi)
-	jle next12
-	iaddq $1, %rax
-next12:
-	andq %r13, %r13
-	rmmovq %r13, 40(%rsi)
-	jle next13
-	iaddq $1, %rax
-next13:
-	iaddq $-1, %rdx
-	je Done
-	andq %r14, %r14
-	rmmovq %r14, 48(%rsi)
-	jle Done
-	jmp preDone
-next2:
-	iaddq $3, %rdx
-	je Done
-	mrmovq (%rdi), %r8
+c2:
 	mrmovq 8(%rdi), %r9
-	rmmovq %r8, (%rsi)
-	andq %r8, %r8
-	jle next21
-	iaddq $1, %rax
-next21:
-	iaddq $-1, %rdx
-	je Done
-	rmmovq %r9, 8(%rsi)
 	andq %r9, %r9
+	rmmovq %r9, 8(%rsi)
+	jle c1
+	iaddq $1, %rax
+c1:
+	mrmovq (%rdi), %r8
+	andq %r8, %r8
+	rmmovq %r8, (%rsi)
 	jle Done
-preDone:
 	iaddq $1, %rax
 ##################################################################
 # Do not modify the following section of code
