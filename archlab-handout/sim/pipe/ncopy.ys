@@ -21,10 +21,10 @@ ncopy:
 # You can modify this portion
 # try loop unrolling first and iaddq is available now. limit stores in %r8
 	# Loop header
-	xorq %rax,%rax		# count = 0;
+	# xorq %rax,%rax		# count = 0; by default, %rax stores 0
 	andq %rdx,%rdx		# len <= 0?
 	jle Done		# if so, goto Done:
-	iaddq $-5, %rdx
+	iaddq $-8, %rdx
 	jl preloop2
 loop1:	
 	mrmovq (%rdi), %r8	# read val from src...
@@ -32,6 +32,9 @@ loop1:
 	mrmovq 16(%rdi), %r10	# read val from src...
 	mrmovq 24(%rdi), %r11	# read val from src...
 	mrmovq 32(%rdi), %r12	# read val from src...
+	mrmovq 40(%rdi), %r13	# read val from src...
+	mrmovq 48(%rdi), %r14	# read val from src...
+	mrmovq 56(%rdi), %rcx	# read val from src...
 	rmmovq %r8, (%rsi)	# ...and store it to dst
 	andq %r8, %r8		# val <= 0?
 	jle add2
@@ -53,21 +56,36 @@ add4:
 	iaddq $1, %rax		# count++
 add5:
 	rmmovq %r12, 32(%rsi)	# ...and store it to dst
-	iaddq $40, %rdi
-	iaddq $40, %rsi
 	andq %r12, %r12 	# val <= 0?
+	jle add6
+	iaddq $1, %rax		# count++
+add6:
+	rmmovq %r13, 40(%rsi)	# ...and store it to dst
+	andq %r13, %r13 	# val <= 0?
+	jle add7
+	iaddq $1, %rax		# count++
+add7:
+	rmmovq %r14, 48(%rsi)	# ...and store it to dst
+	andq %r14, %r14	    # val <= 0?
+	jle add8
+	iaddq $1, %rax		# count++
+add8:
+	rmmovq %rcx, 56(%rsi)	# ...and store it to dst
+	iaddq $64, %rdi
+	iaddq $64, %rsi
+	andq %rcx, %rcx 	# val <= 0?
 	jle test
 	iaddq $1, %rax		# count++
 test:
-	iaddq $-5, %rdx
-	jge loop1 # if so, goto Loop1:big loop 4 x 1
+	iaddq $-8, %rdx
+	jge loop1 # if so, goto Loop1:big loop 8 x 1
 preloop2:
-	iaddq $3, %rdx
+	iaddq $5, %rdx
 	jl next2
-	jg next1
 next0:
 	mrmovq (%rdi), %r8
 	mrmovq 8(%rdi), %r9
+	mrmovq 16(%rdi), %r10
 	andq %r8, %r8
 	rmmovq %r8, (%rsi)
 	jle next01
@@ -75,41 +93,59 @@ next0:
 next01:
 	andq %r9, %r9
 	rmmovq %r9, 8(%rsi)
-	jle Done
-	jmp preDone
+	jle next02
+	iaddq $1, %rax
+next02:
+	andq %r10, %r10
+	rmmovq %r10, 16(%rsi)
+	jle next1
+	iaddq $1, %rax
 next1:
-	mrmovq (%rdi), %r8
-	mrmovq 8(%rdi), %r9
-	mrmovq 16(%rdi), %r10
-	andq %r8, %r8
-	rmmovq %r8, (%rsi)
+	andq %rdx, %rdx
+	je Done
+	mrmovq 24(%rdi), %r11
+	mrmovq 32(%rdi), %r12
+	andq %r11, %r11
+	rmmovq %r11, 24(%rsi)
 	jle next11
 	iaddq $1, %rax
 next11:
-	andq %r9, %r9
-	rmmovq %r9, 8(%rsi)
-	jle next120
-	iaddq $1, %rax
-next120:
-	andq %r10, %r10
-	rmmovq %r10, 16(%rsi)
-	jle next121
-	iaddq $1, %rax
-next121:
 	iaddq $-1, %rdx
 	je Done
+	andq %r12, %r12
+	rmmovq %r12, 32(%rsi)
+	jle next12
+	iaddq $1, %rax
+next12:
+	iaddq $-1, %rdx
+	je Done
+	mrmovq 40(%rdi), %r13
+	mrmovq 48(%rdi), %r14
+	andq %r13, %r13
+	rmmovq %r13, 40(%rsi)
+	jle next13
+	iaddq $1, %rax
 next13:
-	mrmovq 24(%rdi), %r11
-	andq %r11, %r11
-	rmmovq %r11, 24(%rsi)
+	iaddq $-1, %rdx
+	je Done
+	andq %r14, %r14
+	rmmovq %r14, 48(%rsi)
 	jle Done
 	jmp preDone
 next2:
-	iaddq $2, %rdx
+	iaddq $3, %rdx
 	je Done
 	mrmovq (%rdi), %r8
+	mrmovq 8(%rdi), %r9
 	rmmovq %r8, (%rsi)
 	andq %r8, %r8
+	jle next21
+	iaddq $1, %rax
+next21:
+	iaddq $-1, %rdx
+	je Done
+	rmmovq %r9, 8(%rsi)
+	andq %r9, %r9
 	jle Done
 preDone:
 	iaddq $1, %rax
