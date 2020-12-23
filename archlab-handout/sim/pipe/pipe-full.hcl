@@ -1,3 +1,5 @@
+# 19307130352 Mengyao Wang
+# do almost the same thing in seq-full.hcl and add IIADDQ. nothing else has been done
 #/* $begin pipe-all-hcl */
 ####################################################################
 #    HCL Description of Control for Pipelined Y86-64 Processor     #

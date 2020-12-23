@@ -1,4 +1,8 @@
 # 19307130352 Mengyao Wang
+# add IIADDQ to instr_valid, need register rB as src_B and dst_E and need val_C
+# in alu module, need tow constants, val_B and val_C, and then add them together. alufun needn't modifying and
+#     will do adding by default
+# add it to set_CC
 #/* $begin seq-all-hcl */
 ####################################################################
 #  HCL Description of Control for Single Cycle Y86-64 Processor SEQ   #
