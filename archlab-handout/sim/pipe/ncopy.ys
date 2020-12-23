@@ -98,29 +98,41 @@ next01:
 next02:
 	andq %r10, %r10
 	rmmovq %r10, 16(%rsi)
-	jle next1
+	jle prenext1
 	iaddq $1, %rax
-next1:
+# 4,5,6,7
+prenext1:
 	andq %rdx, %rdx
 	je Done
 	mrmovq 24(%rdi), %r11
 	mrmovq 32(%rdi), %r12
+	iaddq $-2, %rdx
+	jg next1
+next4:
+	andq %r11, %r11
+	rmmovq %r11, 24(%rsi)
+	jle next41
+	iaddq $1, %rax
+next41:
+	iaddq $1, %rdx
+	je Done
+	andq %r12, %r12
+	rmmovq %r12, 32(%rsi)
+	jle Done
+	jmp preDone
+next1:
+	mrmovq 40(%rdi), %r13
+	mrmovq 48(%rdi), %r14
 	andq %r11, %r11
 	rmmovq %r11, 24(%rsi)
 	jle next11
 	iaddq $1, %rax
 next11:
-	iaddq $-1, %rdx
-	je Done
 	andq %r12, %r12
 	rmmovq %r12, 32(%rsi)
 	jle next12
 	iaddq $1, %rax
 next12:
-	iaddq $-1, %rdx
-	je Done
-	mrmovq 40(%rdi), %r13
-	mrmovq 48(%rdi), %r14
 	andq %r13, %r13
 	rmmovq %r13, 40(%rsi)
 	jle next13
